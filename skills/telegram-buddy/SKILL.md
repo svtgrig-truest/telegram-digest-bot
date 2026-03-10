@@ -4,10 +4,12 @@ description: >
   Intelligent Telegram digest skill that reads the user's Telegram via mcp.ai.church MCP
   and delivers structured personal digests. Builds a persistent interest profile from
   message behavior to personalize output. Triggers on: "telegram-buddy", "morning digest",
-  "evening digest", "saved audit", "telegram news", "opportunity alerts",
-  "telegram-buddy: morning-digest", "telegram-buddy: evening-digest".
-  Two digest types: morning (07:00, news + saved + events) and evening (21:00, updates +
-  opportunities + unfulfilled promises). State files in ~/telegram-digest-bot/buddy/.
+  "afternoon digest", "evening digest", "saved audit", "telegram news", "opportunity alerts",
+  "jobs digest", "hawala digest", "telegram-buddy: morning-digest",
+  "telegram-buddy: afternoon-digest", "telegram-buddy: evening-digest".
+  Three digest types: morning (07:00, news + saved + events), afternoon (15:00, jobs +
+  hawala + opportunity alerts), evening (21:00, updates + promises + missed calls).
+  State files in ~/telegram-digest-bot/buddy/.
   Uses Claude Code's built-in MCP tools (list_chats, get_messages) — no manual token setup required.
 ---
 
@@ -24,14 +26,14 @@ description: >
 Reference files (read as needed):
 - `references/mcp-api.md` — MCP tool signatures, parameters, response format
 - `references/config-schema.md` — YAML file schemas and cold start behavior
-- `references/digest-formats.md` — Output templates for morning/evening digest
+- `references/digest-formats.md` — Output templates for morning/afternoon/evening digest
 
 ## Startup Sequence (every run)
 
 1. Read `~/telegram-digest-bot/buddy/config.yaml` — use defaults if missing (see `references/config-schema.md`)
 2. Read `~/telegram-digest-bot/buddy/profile.yaml` — create new if missing (cold start)
 3. Read `~/telegram-digest-bot/buddy/state.yaml` — use 12h default window if missing
-4. Determine digest type from prompt: `morning-digest` or `evening-digest`
+4. Determine digest type from prompt: `morning-digest`, `afternoon-digest`, or `evening-digest`
 
 ## Morning Digest Workflow
 
@@ -39,21 +41,44 @@ Reference files (read as needed):
 2. Filter: keep `type=channel` and `type=supergroup` (news sources); find "Saved Messages" chat (`type=user`, title="Saved Messages" or "Избранное")
 3. For each news chat: call `get_messages` (limit 100)
 4. For Saved Messages: call `get_messages` (limit 100), filter to last `saved_messages_days` days by `date` field
-5. Analyze all messages — read `references/digest-formats.md` for output format:
+5. Scan `event_sources` from `config.yaml` (call `get_messages` limit 100 for each):
+   - Fetch window: same as the digest window (since `last_morning_run`, or 12h on cold start)
+   - Display filter: show only events whose date falls within the next 14 days from today
+   - Do NOT use a fixed 14-day fetch window on every run — only fetch new messages since last run
+6. Analyze all messages — read `references/digest-formats.md` for output format:
    - News: top 5-7 stories, deduplicated across sources
-   - Events: extract upcoming dates/venues/links (next 14 days)
+   - Events: from step 5, display up to 14-day horizon; link each event to its source message (see digest-formats.md § Telegram Message Deep Links)
    - Saved: group by topic cluster
-6. Update `profile.yaml` — see Interest Profile Update Rules below
-7. Write `last_morning_run` (ISO8601) to `state.yaml`
-8. Output formatted morning digest — read `references/digest-formats.md` for template
+7. Update `profile.yaml` — see Interest Profile Update Rules below
+8. Write `last_morning_run` (ISO8601) to `state.yaml`
+9. Output formatted morning digest — read `references/digest-formats.md` for template
+
+## Afternoon Digest Workflow
+
+Focused entirely on opportunities: jobs, currency/hawala, and timely alerts.
+
+1. Read `opportunity_sources` from `config.yaml`
+2. Fetch window: since `last_morning_run` in `state.yaml` (or 8h on cold start)
+3. For each source: call `get_messages` (limit 100) within the fetch window
+4. **Jobs & Roles** section:
+   - Filter for actual job postings (not meta-chat)
+   - Match against `profile.yaml` interests/entities to rank relevance
+   - Show: role, company, stack/domain, Telegram message deep link — top 5-8 most relevant
+5. **Currency / Hawala** section:
+   - Extract exchange rate posts, service announcements, limits changes
+   - Show: rates (GBP/RUB, EUR/RUB, USD/RUB if present), key service updates, Telegram message deep link
+   - Deep link construction: see `references/digest-formats.md` § Telegram Message Deep Links
+6. Update `profile.yaml` (opportunity signals — roles seen, skills mentioned)
+7. Write `last_afternoon_run` (ISO8601) to `state.yaml`
+8. Output formatted afternoon digest — read `references/digest-formats.md` for template
 
 ## Evening Digest Workflow
 
 1. Same startup + `list_chats` + `get_messages` (same as morning)
-2. Time window: since `last_morning_run` in `state.yaml` (not fixed 12h)
+2. Time window: since `last_afternoon_run` (or `last_morning_run` if afternoon not run) in `state.yaml`
 3. News sources: same as morning pipeline, shorter window
 4. Personal chats: fetch `get_messages` from `close_circle` contacts (from `config.yaml`)
-5. Opportunity alerts: match messages against `profile.yaml` entities/topics — jobs, exchanges, events, tools
+5. Opportunity alerts: quick rescan of `opportunity_sources` for anything since afternoon run
 6. Unfulfilled promises: scan personal chats (last `promises_scan_days` days)
    - Use LLM judgment to detect commitments with no resolution
    - Multilingual; avoid false positives
@@ -63,7 +88,7 @@ Reference files (read as needed):
 8. Update `profile.yaml` and write `last_evening_run` to `state.yaml`
 9. Output formatted evening digest — read `references/digest-formats.md` for template
 
-## Interest Profile Update Rules (both digest types)
+## Interest Profile Update Rules (all digest types)
 
 After analyzing messages, update `~/telegram-digest-bot/buddy/profile.yaml`:
 - Extract entity types dynamically — no fixed list; infer relevant categories from content

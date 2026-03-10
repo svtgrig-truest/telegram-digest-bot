@@ -1,0 +1,71 @@
+last_updated: "2026-03-10T13:52:00Z"
+
+entities:
+  # News sources / media diet
+  - type: channel
+    name: "Медуза LIVE"
+    chat_id: 1036240821
+    mentions: 1
+    last_seen: "2026-03-10"
+    notes: "Exile Russian investigative media — daily driver"
+
+  - type: channel
+    name: "Телеканал Дождь"
+    chat_id: 1005031786
+    mentions: 1
+    last_seen: "2026-03-10"
+    notes: "Exile Russian TV"
+
+  - type: channel
+    name: "BBC News | Русская служба"
+    chat_id: 1003921752
+    mentions: 1
+    last_seen: "2026-03-10"
+    notes: "International news in Russian"
+
+  - type: channel
+    name: "Новая газета Европа"
+    chat_id: 1787051249
+    mentions: 1
+    last_seen: "2026-03-10"
+    notes: "Exile Russian investigative journalism"
+
+  - type: channel
+    name: "all things AI"
+    chat_id: 2889261680
+    mentions: 1
+    last_seen: "2026-03-10"
+    notes: "AI/ML news, tools, research — English"
+
+topics:
+  - name: "Russia-Ukraine war"
+    mentions: 3
+    last_seen: "2026-03-10"
+    signals: ["Donetsk strike", "mobilisation law", "MoD extraterritorial forces bill"]
+
+  - name: "Russian legislation / politics"
+    mentions: 2
+    last_seen: "2026-03-10"
+    signals: ["conscription court appeal bill", "MoD extraterritorial forces"]
+
+  - name: "AI / ML tools"
+    mentions: 2
+    last_seen: "2026-03-10"
+    signals: ["Anthropic labour market", "OpenClaw China", "programmer tasks automation"]
+
+  - name: "Geopolitics / Middle East"
+    mentions: 1
+    last_seen: "2026-03-10"
+    signals: ["Iran Supreme Leader succession", "Mojtaba Khamenei"]
+
+  - name: "Paralympics / sport"
+    mentions: 1
+    last_seen: "2026-03-10"
+    signals: ["Anastasia Bagyan gold"]
+
+interests_inferred:
+  - "Russian exile media (opposition perspective)"
+  - "AI/ML research and tooling"
+  - "Russia-Ukraine conflict updates"
+  - "Russian domestic policy and legislation"
+  - "International geopolitics"

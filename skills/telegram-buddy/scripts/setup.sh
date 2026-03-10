@@ -160,15 +160,62 @@ cat > "$EVENING_PLIST" <<EOF
 EOF
 info "  Written: $EVENING_PLIST"
 
-# ─── Step 8: Load launchd plists ──────────────────────────────────────────────
-info "Step 8: Loading launchd jobs..."
+# ─── Step 8: Generate afternoon launchd plist ─────────────────────────────────
+info "Step 8: Writing afternoon launchd plist..."
+AFTERNOON_PLIST="$HOME/Library/LaunchAgents/com.telegram-buddy.afternoon.plist"
+cat > "$AFTERNOON_PLIST" <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.telegram-buddy.afternoon</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>${CLAUDE_BIN}</string>
+        <string>-p</string>
+        <string>telegram-buddy: afternoon-digest</string>
+    </array>
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>15</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>HOME</key>
+        <string>${PLIST_HOME}</string>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+        <key>ANTHROPIC_API_KEY</key>
+        <string>${API_KEY_VALUE}</string>
+    </dict>
+    <key>WorkingDirectory</key>
+    <string>${WORK_DIR}</string>
+    <key>StandardOutPath</key>
+    <string>${LOG_DIR}/afternoon.log</string>
+    <key>StandardErrorPath</key>
+    <string>${LOG_DIR}/afternoon-error.log</string>
+    <key>RunAtLoad</key>
+    <false/>
+</dict>
+</plist>
+EOF
+info "  Written: $AFTERNOON_PLIST"
+
+# ─── Step 9: Load launchd plists ──────────────────────────────────────────────
+info "Step 9: Loading launchd jobs..."
 launchctl unload "$MORNING_PLIST" 2>/dev/null || true
 launchctl load "$MORNING_PLIST"
+launchctl unload "$AFTERNOON_PLIST" 2>/dev/null || true
+launchctl load "$AFTERNOON_PLIST"
 launchctl unload "$EVENING_PLIST" 2>/dev/null || true
 launchctl load "$EVENING_PLIST"
 info "  Jobs loaded."
 
-# ─── Step 9: Print success summary ───────────────────────────────────────────
+# ─── Step 10: Print success summary ───────────────────────────────────────────
 echo ""
 echo -e "${GREEN}✅ telegram-buddy setup complete!${RESET}"
 echo ""
@@ -177,15 +224,18 @@ echo "  ~/telegram-digest-bot/buddy/       (state files)"
 echo "  ~/telegram-digest-bot/buddy/logs/  (log files)"
 echo ""
 echo "Scheduled jobs:"
-echo -e "  \033[33m🌅 Morning digest: 07:00 daily (system time)${RESET}"
-echo -e "  \033[34m🌙 Evening digest: 21:00 daily (system time)${RESET}"
+echo -e "  \033[33m🌅 Morning digest:   07:00 daily — news, events, saved${RESET}"
+echo -e "  \033[36m💼 Afternoon digest: 15:00 daily — jobs, hawala, opportunities${RESET}"
+echo -e "  \033[34m🌙 Evening digest:   21:00 daily — updates, promises, missed calls${RESET}"
 echo ""
 echo -e "${YELLOW}⚠️  Note: Jobs run in system timezone. If your Mac is not set to Europe/London,${RESET}"
 echo -e "${YELLOW}    adjust Hour values in ~/Library/LaunchAgents/com.telegram-buddy.*.plist${RESET}"
 echo ""
 echo "Test now:"
 echo "  claude -p \"telegram-buddy: morning-digest\""
+echo "  claude -p \"telegram-buddy: afternoon-digest\""
 echo ""
 echo "Logs:"
 echo "  tail -f ~/telegram-digest-bot/buddy/logs/morning.log"
+echo "  tail -f ~/telegram-digest-bot/buddy/logs/afternoon.log"
 echo "  tail -f ~/telegram-digest-bot/buddy/logs/evening.log"

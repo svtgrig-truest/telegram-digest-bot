@@ -1,0 +1,101 @@
+timezone: "Europe/London"
+close_circle: []
+morning_digest:
+  hour: 7
+  window_hours: 12
+afternoon_digest:
+  hour: 15
+  window_hours: 8   # since last_morning_run
+evening_digest:
+  hour: 21
+  window_hours: 12
+saved_messages_days: 7
+promises_scan_days: 7
+
+# Channels scanned specifically for events (offline + online)
+event_sources:
+  # London cultural & community
+  - chat_id: 1860213610
+    name: "London Cult."
+    type: channel
+  - chat_id: 1059915386
+    name: "ZIMA Magazine"
+    type: channel
+  - chat_id: 1446015919
+    name: "Lorbit in London"
+    type: channel
+  - chat_id: 1152615556
+    name: "Свои в Лондоне"
+    type: supergroup
+  - chat_id: 1560340758
+    name: "russiansinlondon"
+    type: channel
+  # London events & culture
+  - chat_id: 1317878880
+    name: "Афиша | Лондон | Журнал"
+    type: channel
+  # Tech / product / webinar channels
+  - chat_id: 1164452773
+    name: "Машинное обучение"
+    type: supergroup
+  - chat_id: 1121043580
+    name: "ProductCamp Russia"
+    type: supergroup
+  - chat_id: 2466281307
+    name: "Чигорин о AI и стартапах"
+    type: channel
+  - chat_id: 1405730877
+    name: "The Edinorog"
+    type: channel
+  - chat_id: 1137067206
+    name: "Epic Growth"
+    type: channel
+  - chat_id: 1354117866
+    name: "Krasinsky: growth, marketing & analytics"
+    type: channel
+  - chat_id: 1436631819
+    name: "ODS events @ London"
+    type: supergroup
+  - chat_id: 8585194944
+    name: "LIVE — Data Driven Marketing"
+    type: user
+
+# Channels scanned for the afternoon opportunity digest (15:00)
+opportunity_sources:
+  # Product / PM jobs
+  - chat_id: 1088399568
+    name: "Products Jobs"
+    type: supergroup
+  - chat_id: 1093073202
+    name: "Job for Products and Projects"
+    type: channel
+  - chat_id: 1113141406
+    name: "Hire ProProduct"
+    type: channel
+  - chat_id: 1451679999
+    name: "Product's Connectable Jobs"
+    type: channel
+  - chat_id: 1322084768
+    name: "Job for Chiefs (TOP vacancies)"
+    type: channel
+  - chat_id: 1804835860
+    name: "Connectable Jobs"
+    type: channel
+  # International & London careers
+  - chat_id: 1624372579
+    name: "Иван Доронин | Карьера за рубежом"
+    type: channel
+  # Dev / ML jobs
+  - chat_id: 1786987882
+    name: "Dev & ML Connectable Jobs"
+    type: channel
+  # Hawala / currency / banking
+  - chat_id: 1657270017
+    name: "ruХавала"
+    type: supergroup
+  - chat_id: 1659915145
+    name: "Зарубежные карты для нерезидентов"
+    type: supergroup
+  - chat_id: 1613011282
+    name: "Банки ⋮ Санкции ⋮ SWIFT"
+    type: channel

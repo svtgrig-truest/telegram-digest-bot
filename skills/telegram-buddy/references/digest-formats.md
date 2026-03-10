@@ -30,11 +30,12 @@ The morning digest covers: news, events, saved messages audit.
 
 ## 📅 Events This Week
 
-| Event | Date | Where | Link |
-|-------|------|--------|------|
-| {Event name} | {Date} | {City/Online} | [Register]({url}) |
+| Event | Date | Where | Source |
+|-------|------|--------|--------|
+| {Event name} | {Date} | {City/Online} | [{Channel name}]({telegram_message_link}) |
 
 *(Show if date is in next 14 days. Skip if no events found — omit section entirely.)*
+*(Include registration link inline if available: e.g. "**{Event}** — [Register]({reg_url}) · [Source]({tg_link})")*
 
 ---
 
@@ -51,6 +52,44 @@ The morning digest covers: news, events, saved messages audit.
 ...
 
 *(Group by topic. If only 1 item in a cluster, don't create sub-heading. Max 15 items total.)*
+
+---
+*Generated {timestamp} · Next: Afternoon Digest at 15:00 · Evening Digest at 21:00*
+```
+
+---
+
+## Afternoon Digest
+
+The afternoon digest covers: jobs & roles, currency / hawala rates, opportunity alerts.
+
+```
+# ☀️ Afternoon Digest — {date} (Opportunities)
+
+## 💼 Jobs & Roles
+
+*(Top 5–8 most relevant postings, ranked against profile.yaml interests)*
+
+- **{Role title}** at {Company} · {stack/domain tags}
+  {1-sentence job description}
+  [{Source channel}]({telegram_message_link}) · {date posted}
+
+---
+
+## 🔁 Currency / Hawala
+
+*(Exchange rates, service announcements, limits updates from ruХавала etc.)*
+
+- **{Currency pair}**: {rate or service update}
+  [{Source channel}]({telegram_message_link}) · {time}
+
+---
+
+## 🛠️ Other Opportunities
+
+*(Tools, beta launches, referral programs — only if matched against profile)*
+
+- **{Item}** — {why relevant} · [{Source}]({telegram_message_link})
 
 ---
 *Generated {timestamp} · Next: Evening Digest at 21:00*
@@ -149,9 +188,22 @@ The evening digest covers: news updates, opportunity alerts, unfulfilled promise
 - Group related stories together
 - Summarize agreement/disagreement between sources ("Reuters and BBC agree on X. The Guardian adds Y.")
 
+### Telegram Message Deep Links
+
+Always link to the source message rather than just naming the channel:
+
+- **Public channel** (has username): `https://t.me/{username}/{message_id}`
+- **Private channel / supergroup** (no username): `https://t.me/c/{clean_id}/{message_id}`
+  where `clean_id = str(abs(chat_id))[3:]` — strips the `-100` prefix Telegram adds to channel IDs
+  Example: `chat_id = -1001317878880` → `clean_id = "1317878880"` → `https://t.me/c/1317878880/42`
+- **Fallback**: if message_id is unavailable, link to the channel directly
+
+Apply to: all event source items, all opportunity alert items (jobs, hawala, tools).
+
 ### Events Section
 - Show only if event date is in next 14 days
-- Include: Event name, date, location (City/Online), registration link
+- Include: Event name, date, location (City/Online), Telegram message deep link as source
+- If a registration/external URL is also in the message text, show it alongside the source link
 - Omit section entirely if no upcoming events
 
 ### Saved Messages Audit

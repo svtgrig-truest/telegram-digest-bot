@@ -19,11 +19,24 @@ close_circle: array[object]   # Contacts whose personal messages are highlighted
 morning_digest: object
   hour: number                # Hour of day (0-23) to run morning digest
   window_hours: number        # Look back this many hours for messages
+afternoon_digest: object      # Opportunity digest (jobs, hawala) — runs between morning & evening
+  hour: number                # Hour of day (0-23), e.g. 15
+  window_hours: number        # Look back since last_morning_run (typically 8)
 evening_digest: object
   hour: number                # Hour of day (0-23) to run evening digest
-  window_hours: number        # Look back since last_morning_run (typically 12)
+  window_hours: number        # Look back since last_afternoon_run (or last_morning_run)
 saved_messages_days: number   # How many days of Saved Messages to audit (optional)
 promises_scan_days: number    # How many days of personal chats to scan for promises (optional)
+
+event_sources: array[object]  # Channels scanned for upcoming events (both digest types)
+  - chat_id: number
+    name: string
+    type: string              # "channel", "supergroup", or "user"
+
+opportunity_sources: array[object]  # Channels scanned for the afternoon opportunity digest only
+  - chat_id: number
+    name: string
+    type: string              # "channel", "supergroup", or "user"
 ```
 
 ### Example config.yaml
@@ -35,16 +48,14 @@ close_circle:
   - name: "Anna"
     chat_id: 123456789
     chat_type: "user"
-  - name: "Mom"
-    chat_id: 987654321
-    chat_type: "user"
-  - name: "Work Team"
-    chat_id: 111222333
-    chat_type: "supergroup"
 
 morning_digest:
   hour: 7
   window_hours: 12
+
+afternoon_digest:
+  hour: 15
+  window_hours: 8
 
 evening_digest:
   hour: 21
@@ -52,6 +63,19 @@ evening_digest:
 
 saved_messages_days: 7
 promises_scan_days: 7
+
+event_sources:
+  - chat_id: 1317878880
+    name: "Афиша | Лондон | Журнал"
+    type: channel
+
+opportunity_sources:
+  - chat_id: 1657270017
+    name: "ruХавала"
+    type: supergroup
+  - chat_id: 1088399568
+    name: "Products Jobs"
+    type: supergroup
 ```
 
 ### Field Details
@@ -85,11 +109,16 @@ close_circle: []
 morning_digest:
   hour: 8
   window_hours: 12
+afternoon_digest:
+  hour: 15
+  window_hours: 8
 evening_digest:
   hour: 20
   window_hours: 12
 saved_messages_days: 7
 promises_scan_days: 7
+event_sources: []
+opportunity_sources: []
 ```
 
 ---
@@ -215,6 +244,7 @@ Tracks the timestamps of the last successful digest runs. This file is **written
 
 ```yaml
 last_morning_run: string      # ISO8601 UTC timestamp of last successful morning digest
+last_afternoon_run: string    # ISO8601 UTC timestamp of last successful afternoon digest
 last_evening_run: string      # ISO8601 UTC timestamp of last successful evening digest
 version: string               # Schema version (currently "1.0")
 ```
@@ -223,6 +253,7 @@ version: string               # Schema version (currently "1.0")
 
 ```yaml
 last_morning_run: "2026-03-10T07:15:32Z"
+last_afternoon_run: "2026-03-10T15:02:44Z"
 last_evening_run: "2026-03-09T21:03:11Z"
 version: "1.0"
 ```
@@ -230,10 +261,12 @@ version: "1.0"
 ### Runtime Behavior
 
 - **Morning run**: After executing the morning digest, Claude writes the completion timestamp to `last_morning_run`
-- **Evening run**: Uses `last_morning_run` as the window start (not a fixed 12-hour window). This ensures no messages are missed if there are delays or skipped runs. After completion, writes timestamp to `last_evening_run`
+- **Afternoon run**: Uses `last_morning_run` as the window start. After completion, writes timestamp to `last_afternoon_run`
+- **Evening run**: Uses `last_afternoon_run` as the window start (falls back to `last_morning_run` if afternoon was skipped). After completion, writes timestamp to `last_evening_run`
 - **Window calculation**:
   - Morning digest window: `[now - morning_digest.window_hours, now]`
-  - Evening digest window: `[last_morning_run, now]`
+  - Afternoon digest window: `[last_morning_run, now]`
+  - Evening digest window: `[last_afternoon_run or last_morning_run, now]`
 
 ### Why This Matters
 
