@@ -1,4 +1,5 @@
 timezone: "Europe/London"
+email_digest_to: "svtgrig007@gmail.com"
 close_circle: []
 morning_digest:
   hour: 7

@@ -12,6 +12,7 @@ The primary configuration file. Users edit this directly to customize skill beha
 
 ```yaml
 timezone: string              # IANA timezone (e.g., "Europe/London", "America/New_York")
+email_digest_to: string       # (optional) Email address to send each digest to after generation
 close_circle: array[object]   # Contacts whose personal messages are highlighted
   - name: string              # Friendly name for the contact
     chat_id: number           # Telegram chat_id (from list_chats output)
@@ -43,6 +44,7 @@ opportunity_sources: array[object]  # Channels scanned for the afternoon opportu
 
 ```yaml
 timezone: "Europe/London"
+email_digest_to: "you@gmail.com"   # omit to disable email delivery
 
 close_circle:
   - name: "Anna"

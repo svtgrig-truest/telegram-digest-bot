@@ -51,7 +51,8 @@ Reference files (read as needed):
    - Saved: group by topic cluster
 7. Update `profile.yaml` — see Interest Profile Update Rules below
 8. Write `last_morning_run` (ISO8601) to `state.yaml`
-9. Output formatted morning digest — read `references/digest-formats.md` for template
+9. Send email — see Email Delivery section below
+10. Output formatted morning digest — read `references/digest-formats.md` for template
 
 ## Afternoon Digest Workflow
 
@@ -70,7 +71,8 @@ Focused entirely on opportunities: jobs, currency/hawala, and timely alerts.
    - Deep link construction: see `references/digest-formats.md` § Telegram Message Deep Links
 6. Update `profile.yaml` (opportunity signals — roles seen, skills mentioned)
 7. Write `last_afternoon_run` (ISO8601) to `state.yaml`
-8. Output formatted afternoon digest — read `references/digest-formats.md` for template
+8. Send email — see Email Delivery section below
+9. Output formatted afternoon digest — read `references/digest-formats.md` for template
 
 ## Evening Digest Workflow
 
@@ -86,7 +88,8 @@ Focused entirely on opportunities: jobs, currency/hawala, and timely alerts.
 7. Missed calls: scan for service messages with call-related text (📞, "Missed call", "Пропущенный звонок")
    - If not found in MCP output, note: "Missed call detection not available via MCP (v2)"
 8. Update `profile.yaml` and write `last_evening_run` to `state.yaml`
-9. Output formatted evening digest — read `references/digest-formats.md` for template
+9. Send email — see Email Delivery section below
+10. Output formatted evening digest — read `references/digest-formats.md` for template
 
 ## Cold-Start / No Channels Configured
 
@@ -104,6 +107,33 @@ If `event_sources` is empty (morning/evening) or `opportunity_sources` is empty 
        type: <type>
    ```
 5. Still run the digest using only Saved Messages (morning/evening) — skip opportunity sections (afternoon) if no sources configured
+
+## Email Delivery
+
+If `email_digest_to` is set in `config.yaml`, send the digest by email after generating content:
+
+1. Compose subject:
+   - Morning: `🌅 Morning Digest — {DD Mon YYYY}`
+   - Afternoon: `☀️ Afternoon Digest — {DD Mon YYYY}`
+   - Evening: `🌙 Evening Digest — {DD Mon YYYY}`
+
+2. Create Gmail draft using the `gmail_create_draft` tool:
+   - `to`: value of `email_digest_to` from config
+   - `subject`: as above
+   - `body`: full digest text (plain text, same as stdout output)
+   - `contentType`: `text/plain`
+   - Note the returned `draftId`
+
+3. Send the draft via Bash:
+   ```bash
+   GWS_BIN=$(find ~/.nvm -name "gws" -type f 2>/dev/null | head -1)
+   "$GWS_BIN" gmail users drafts send --user me --format json --body "{\"id\": \"DRAFT_ID\"}"
+   ```
+   Replace `DRAFT_ID` with the `draftId` from step 2.
+
+4. If send fails: log the error to stderr and continue — do NOT abort the digest output.
+
+If `email_digest_to` is absent or empty: skip this section entirely.
 
 ## Interest Profile Update Rules (all digest types)
 
