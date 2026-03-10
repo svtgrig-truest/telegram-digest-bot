@@ -88,6 +88,23 @@ Focused entirely on opportunities: jobs, currency/hawala, and timely alerts.
 8. Update `profile.yaml` and write `last_evening_run` to `state.yaml`
 9. Output formatted evening digest — read `references/digest-formats.md` for template
 
+## Cold-Start / No Channels Configured
+
+If `event_sources` is empty (morning/evening) or `opportunity_sources` is empty (afternoon):
+
+1. Call `list_chats` (limit 100) to discover the user's Telegram channels
+2. Group results by type: channels, supergroups, saved messages, personal chats
+3. Output a formatted table: `chat_id`, `name`, `type`, `unread_count`
+4. Print instructions:
+   ```
+   Add channels to ~/telegram-digest-bot/buddy/config.yaml to get a full digest:
+   event_sources:
+     - chat_id: <id>
+       name: "<name>"
+       type: <type>
+   ```
+5. Still run the digest using only Saved Messages (morning/evening) — skip opportunity sections (afternoon) if no sources configured
+
 ## Interest Profile Update Rules (all digest types)
 
 After analyzing messages, update `~/telegram-digest-bot/buddy/profile.yaml`:

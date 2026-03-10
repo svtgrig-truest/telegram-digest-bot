@@ -28,13 +28,41 @@ close_circle: []
 morning_digest:
   hour: 7
   window_hours: 12
+afternoon_digest:
+  hour: 15
+  window_hours: 8
 evening_digest:
   hour: 21
   window_hours: 12
 saved_messages_days: 7
 promises_scan_days: 7
+
+# Channels scanned for events (morning + evening digest)
+# Find your channel IDs: open Claude and ask "list my Telegram chats"
+event_sources: []
+
+# Channels scanned for jobs, hawala, tickets (afternoon digest)
+opportunity_sources: []
 EOF
   info "  Config written to $CONFIG_FILE"
+fi
+
+# ─── Step 2b: Install skill to ~/.claude/skills/ ──────────────────────────────
+info "Step 2b: Installing telegram-buddy skill..."
+SKILLS_DIR="$HOME/.claude/skills"
+SKILL_SRC="$HOME/telegram-digest-bot/skills/telegram-buddy.skill"
+SKILL_DEST="$SKILLS_DIR/telegram-buddy"
+if [ -d "$SKILL_DEST" ]; then
+  info "  Skill already installed at $SKILL_DEST"
+else
+  if [ ! -f "$SKILL_SRC" ]; then
+    warn "Skill file not found at $SKILL_SRC — skipping skill install."
+  else
+    mkdir -p "$SKILLS_DIR"
+    cp "$SKILL_SRC" "$SKILLS_DIR/"
+    (cd "$SKILLS_DIR" && unzip -q telegram-buddy.skill -d telegram-buddy)
+    info "  Skill installed to $SKILL_DEST"
+  fi
 fi
 
 # ─── Step 3: Detect claude binary path ───────────────────────────────────────
