@@ -127,7 +127,7 @@ If `email_digest_to` is set in `config.yaml`, send the digest by email after gen
 3. Send the draft via Bash:
    ```bash
    GWS_BIN=$(find ~/.nvm -name "gws" -type f 2>/dev/null | head -1)
-   "$GWS_BIN" gmail users drafts send --user me --format json --body "{\"id\": \"DRAFT_ID\"}"
+   "$GWS_BIN" gmail users drafts send --params '{"userId": "me"}' --json '{"id": "DRAFT_ID"}'
    ```
    Replace `DRAFT_ID` with the `draftId` from step 2.
 
