@@ -8,7 +8,7 @@ description: >
   "telegram-buddy: morning-digest", "telegram-buddy: evening-digest".
   Two digest types: morning (07:00, news + saved + events) and evening (21:00, updates +
   opportunities + unfulfilled promises). State files in ~/telegram-digest-bot/buddy/.
-  Requires Bearer token at ~/.telegram-buddy/.token for mcp.ai.church OAuth.
+  Uses Claude Code's built-in MCP tools (list_chats, get_messages) — no manual token setup required.
 ---
 
 # Telegram Buddy
@@ -17,23 +17,21 @@ description: >
 
 | File | Purpose |
 |------|---------|
-| `~/.telegram-buddy/.token` | Bearer token for mcp.ai.church |
 | `~/telegram-digest-bot/buddy/config.yaml` | User settings |
 | `~/telegram-digest-bot/buddy/profile.yaml` | Interest profile (auto-updated) |
 | `~/telegram-digest-bot/buddy/state.yaml` | Last run timestamps |
 
 Reference files (read as needed):
-- `references/mcp-api.md` — MCP endpoint, tools, auth, error handling
+- `references/mcp-api.md` — MCP tool signatures, parameters, response format
 - `references/config-schema.md` — YAML file schemas and cold start behavior
 - `references/digest-formats.md` — Output templates for morning/evening digest
 
 ## Startup Sequence (every run)
 
-1. Read Bearer token from `~/.telegram-buddy/.token` — if missing/expired, read `references/mcp-api.md` for error output format and stop
-2. Read `~/telegram-digest-bot/buddy/config.yaml` — use defaults if missing (see `references/config-schema.md`)
-3. Read `~/telegram-digest-bot/buddy/profile.yaml` — create new if missing (cold start)
-4. Read `~/telegram-digest-bot/buddy/state.yaml` — use 12h default window if missing
-5. Determine digest type from prompt: `morning-digest` or `evening-digest`
+1. Read `~/telegram-digest-bot/buddy/config.yaml` — use defaults if missing (see `references/config-schema.md`)
+2. Read `~/telegram-digest-bot/buddy/profile.yaml` — create new if missing (cold start)
+3. Read `~/telegram-digest-bot/buddy/state.yaml` — use 12h default window if missing
+4. Determine digest type from prompt: `morning-digest` or `evening-digest`
 
 ## Morning Digest Workflow
 
