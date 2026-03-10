@@ -111,6 +111,7 @@ cat > "$MORNING_PLIST" <<EOF
     <key>ProgramArguments</key>
     <array>
         <string>${CLAUDE_BIN}</string>
+        <string>--dangerously-skip-permissions</string>
         <string>-p</string>
         <string>telegram-buddy: morning-digest</string>
     </array>
@@ -156,6 +157,7 @@ cat > "$EVENING_PLIST" <<EOF
     <key>ProgramArguments</key>
     <array>
         <string>${CLAUDE_BIN}</string>
+        <string>--dangerously-skip-permissions</string>
         <string>-p</string>
         <string>telegram-buddy: evening-digest</string>
     </array>
@@ -201,6 +203,7 @@ cat > "$AFTERNOON_PLIST" <<EOF
     <key>ProgramArguments</key>
     <array>
         <string>${CLAUDE_BIN}</string>
+        <string>--dangerously-skip-permissions</string>
         <string>-p</string>
         <string>telegram-buddy: afternoon-digest</string>
     </array>
