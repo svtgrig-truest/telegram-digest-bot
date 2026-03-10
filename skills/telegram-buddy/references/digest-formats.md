@@ -85,6 +85,15 @@ The afternoon digest covers: jobs & roles, currency / hawala rates, opportunity 
 
 ---
 
+## 🎫 Tickets & Events (Spare / For Sale)
+
+*(Tickets being given away or sold — from Как Мне Театр в Лондоне etc.)*
+
+- **{Show / Event name}** — {date}, {venue}
+  {price or free} · [{Source}]({telegram_message_link}) · {posted time}
+
+---
+
 ## 🛠️ Other Opportunities
 
 *(Tools, beta launches, referral programs — only if matched against profile)*

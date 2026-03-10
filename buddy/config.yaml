@@ -89,6 +89,10 @@ opportunity_sources:
   - chat_id: 1786987882
     name: "Dev & ML Connectable Jobs"
     type: channel
+  # Theatre tickets (London)
+  - chat_id: 3067390022
+    name: "Как Мне Театр в Лондоне"
+    type: supergroup
   # Hawala / currency / banking
   - chat_id: 1657270017
     name: "ruХавала"
